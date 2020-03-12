@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Connection from '../views/Connection.vue'
+import Endpoint from '../views/Endpoint.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/connection', component: Connection },
+  { path: '/endpoint', component: Endpoint },
 ]
 
 const router = new VueRouter({

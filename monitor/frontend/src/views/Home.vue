@@ -2,17 +2,12 @@
 
   <div class="row">
     <div class="col-sm">
-      <h2>Configuration</h2>
+      <h2>Configuration <settings-icon></settings-icon></h2>
       <hr>
-      <div class="row">
-        <div class="col-8">
-          <span v-if="connected"><check-circle-icon></check-circle-icon> Database connected</span>
-          <span v-if="!connected"><alert-triangle-icon></alert-triangle-icon> Database disconnected</span>
-        </div>
-        <div class="col-4">
-          <router-link to="/connection" class="btn btn-sm btn-primary">Update Connection</router-link>
-        </div>
+      <div>
+        <strong>Endpoint:</strong> <code>{{endpoint}}</code>
       </div>
+      <router-link to="/endpoint" class="btn btn-sm btn-primary">Update Endpoint</router-link>
       <hr>
 
     </div>
@@ -42,15 +37,17 @@
 
 <script>
 
-import { CheckCircleIcon, AlertTriangleIcon } from 'vue-feather-icons'
+import { CheckCircleIcon, AlertTriangleIcon, SettingsIcon } from 'vue-feather-icons'
 import VueTerminal from 'vue-terminal-ui'  
+import api from "../api"
 
 export default {
   name: "App",
   data() {
     return {
       intro: "Migrations Workshop Terminal",
-      connected: false
+      connected: false,
+      endpoint: null
     }
   },
   methods: {
@@ -61,9 +58,15 @@ export default {
       }, 300);
     }
   },
+
+  created() {
+    this.endpoint = api.getEndpoint().endpoint
+  },
+
   components: {
-    VueTerminal, CheckCircleIcon, AlertTriangleIcon
+    VueTerminal, CheckCircleIcon, AlertTriangleIcon, SettingsIcon
   }
+
 }
 </script>
 
