@@ -1,0 +1,38 @@
+version: '3.3'
+
+volumes:
+    logs:
+        driver: local
+    mysqldata:
+        driver: local
+
+services:
+    api:
+        build: .
+        working_dir: /var/www
+        command: php -S 0.0.0.0:8080 -t public
+        environment:
+            docker: "true"
+            APP_DB_HOST: app_mysql_1
+            APP_DB_USER: root
+            APP_DB_PASS: secret
+            APP_DB_NAME: messages
+        ports:
+            - 8080:8080
+        volumes:
+            - .:/var/www
+            - logs:/var/www/logs
+    mysql:
+        image: mysql:8
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+        volumes:
+            - mysqldata:/var/lib/mysql
+
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+          - 8081:8080
