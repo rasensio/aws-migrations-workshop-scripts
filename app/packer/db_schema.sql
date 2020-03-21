@@ -1,5 +1,7 @@
 -- Adminer 4.7.6 MySQL dump
 
+GRANT ALL PRIVILEGES ON messages.* TO 'messages'@'localhost' IDENTIFIED BY 'messages';
+
 SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;

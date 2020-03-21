@@ -13,10 +13,6 @@ services:
         command: php -S 0.0.0.0:8080 -t public
         environment:
             docker: "true"
-            APP_DB_HOST: app_mysql_1
-            APP_DB_USER: root
-            APP_DB_PASS: secret
-            APP_DB_NAME: messages
         ports:
             - 8080:8080
         volumes:
