@@ -113,6 +113,12 @@ $app->get('/', function (Request $request, Response $response, array $args): Res
         'messages' => $messages
     ]);
 });
+
+$app->post('/messages', function (Request $request, Response $response, array $args): Response {
+    $body = $request->getParsedBody();
+    $this->get('repo')->insertMessage($body['full_name'], $body['message']);
+    return $response->withHeader('Location', '/')->withStatus(302);
+});
 /*
  * End of API resources
  */
