@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AWS Migrations Workshop Demo App</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+<body>
+	<section class="section">
+		<div class="container">
+			<h1 class="title">The AWS Migrations Workshop message board</h1>
+			<h2 class="subtitle">App migration without downtime!</h2>
+			<p>Only the 10 most recent messages are shown at any given time.</p>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>From</th>
+						<th>Date</th>
+						<th>Message</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for message in messages %}
+					<tr>
+						<td>{{ message.full_name }}</td>
+						<td>{{ message.created_at }}</td>
+						<td>{{ message.message }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+</body>
+</html>

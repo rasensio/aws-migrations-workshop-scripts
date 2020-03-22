@@ -6,6 +6,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Factory\AppFactory;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -26,6 +28,10 @@ $container->set('repo', function () {
     $dbPass = getenv('APP_DB_PASS');
     $dbName = getenv('APP_DB_NAME');
     return new \App\DbRepository($dbHost, $dbUser, $dbPass, $dbName);
+});
+
+$container->set('view', function () {
+    return Twig::create(__DIR__ . '/../views', ['cache' => false]);
 });
 /*
  * End of dependency container
@@ -48,6 +54,8 @@ $jsonParsingMiddleware = function (Request $request, RequestHandler $handler): R
 };
 
 $app->add($jsonParsingMiddleware);
+
+$app->add(TwigMiddleware::createFromContainer($app));
 /*
  * End of middleware
  */
@@ -97,6 +105,13 @@ $app->post('/api/messages', function (Request $request, Response $response, arra
     $this->get('repo')->insertMessage($body->full_name, $body->message);
     $response->getBody()->write(json_encode(['status' => 'ok'], JSON_PRETTY_PRINT));
     return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/', function (Request $request, Response $response, array $args): Response {
+    $messages = $this->get('repo')->getMessages();
+    return $this->get('view')->render($response, 'home.html', [
+        'messages' => $messages
+    ]);
 });
 /*
  * End of API resources
