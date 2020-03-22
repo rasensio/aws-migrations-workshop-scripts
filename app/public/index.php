@@ -9,7 +9,7 @@ use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv = Dotenv\Dotenv::createMutable(__DIR__ . '/../');
 $dotenv->load();
 
 $container = new Container();
@@ -55,13 +55,44 @@ $app->add($jsonParsingMiddleware);
 /*
  * API resources
  */
-$app->get('/greetings', function (Request $request, Response $response, array $args): Response {
+$app->post(
+    '/api/config',
+    function (Request $request, Response $response, array $args) use ($dotenv): Response {
+        $body = $request->getParsedBody();
+
+        if (!isset($body->db_host) || empty($body->db_host)) {
+            throw new \InvalidArgumentException('db host is required');
+        }
+        if (!isset($body->db_user) || empty($body->db_user)) {
+            throw new \InvalidArgumentException('db user is required');
+        }
+        if (!isset($body->db_pass) || empty($body->db_pass)) {
+            throw new \InvalidArgumentException('db pass is required');
+        }
+        if (!isset($body->db_name) || empty($body->db_name)) {
+            throw new \InvalidArgumentException('db name is required');
+        }
+
+        $config = [
+            'APP_DB_HOST' => $body->db_host,
+            'APP_DB_USER' => $body->db_user,
+            'APP_DB_PASS' => $body->db_pass,
+            'APP_DB_NAME' => $body->db_name,
+        ];
+        file_put_contents(__DIR__ . '/../.env', http_build_query($config, '', "\n\r"));
+
+        $response->getBody()->write(json_encode(['status' => 'ok'], JSON_PRETTY_PRINT));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+);
+
+$app->get('/api/messages', function (Request $request, Response $response, array $args): Response {
     $messages = $this->get('repo')->getMessages();
     $response->getBody()->write(json_encode($messages, JSON_PRETTY_PRINT));
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->post('/greetings', function (Request $request, Response $response, array $args): Response {
+$app->post('/api/messages', function (Request $request, Response $response, array $args): Response {
     $body = $request->getParsedBody();
     $this->get('repo')->insertMessage($body->full_name, $body->message);
     $response->getBody()->write(json_encode(['status' => 'ok'], JSON_PRETTY_PRINT));
