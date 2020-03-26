@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App;
 
@@ -23,9 +24,9 @@ class DbRepository
         return $stm->fetchAll();
     }
 
-    public function insertMessage(string $fullName, string $message) : bool
+    public function insertMessage(string $fullName, string $message, string $pictureFilename = null) : bool
     {
-        $stm = $this->db->prepare('INSERT INTO messages (full_name, message, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)');
-        return $stm->execute([$fullName, $message]);
+        $stm = $this->db->prepare('INSERT INTO messages (full_name, message, picture_filename, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)');
+        return $stm->execute([$fullName, $message, $pictureFilename]);
     }
 }

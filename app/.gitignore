@@ -5,3 +5,5 @@
 !/logs/README.md
 /mysqldata/
 .env
+public/img/pics/*
+!public/img/pics/.gitkeep

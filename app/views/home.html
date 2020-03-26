@@ -12,27 +12,56 @@
 		<div class="container">
 			<h1 class="title">The AWS Migrations Workshop message board</h1>
 			<h2 class="subtitle">App migration without downtime!</h2>
-			<p>Only the 10 most recent messages are shown at any given time.</p>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>From</th>
-						<th>Date</th>
-						<th>Message</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for message in messages %}
-					<tr>
-						<td>{{ message.full_name }}</td>
-						<td>{{ message.created_at }}</td>
-						<td>{{ message.message }}</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
 
-			<form method="POST" action="/messages">
+			<article class="message is-info">
+				<div class="message-body">
+					Only the 10 most recent messages are shown at any given time.
+				</div>
+			</article>
+
+			{% for batch in messages|batch(4) %}
+			<div class="columns">
+				{% for message in batch %}
+				<div class="column is-one-quarter">
+					<div class="card">
+						<div class="card-content">
+							<div class="media">
+								<div class="media-left">
+									<figure class="image is-48x48">
+										{% if message.picture_filename is null %}
+											<img src="/img/placeholder.png" alt="Placeholder image">
+										{% else %}
+											<img src="/img/pics/{{ message.picture_filename }}" alt="Placeholder image">
+										{% endif %}
+									</figure>
+								</div>
+								<div class="media-content">
+									<p class="title is-4">{{ message.full_name }}</p>
+									<p class="subtitle is-6">{{ message.created_at }}</p>
+								</div>
+							</div>
+
+							<div class="content">
+								{{ message.message }}
+							</div>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			{% else %}
+			<div class="columns">
+				<div class="column">
+					<article class="message is-dark">
+						<div class="message-body">
+							No messages yet. Feel free to add one!
+						</div>
+					</article>
+				</div>
+			</div>
+			{% endfor %}
+
+			<form method="POST" action="/messages" enctype="multipart/form-data">
 				<div class="field">
 					<label class="label">Full name</label>
 					<div class="control">
@@ -45,6 +74,23 @@
 						<textarea class="textarea" id="message" name="message" placeholder="Your message"></textarea>
 					</div>
 				</div>
+				<div class="field">
+					<label class="label">Picture</label>
+					<div class="file has-name" id="picture">
+						<label class="file-label">
+							<input class="file-input" type="file" name="picture">
+							<span class="file-cta">
+								<span class="file-icon">
+									<i class="fas fa-upload"></i>
+								</span>
+								<span class="file-label">
+									Choose a file…
+								</span>
+							</span>
+							<span class="file-name">No file selected.</span>
+						</label>
+					</div>
+				</div>
 				<div class="field is-grouped">
 					<div class="control">
 						<button class="button is-link">Submit</button>
@@ -53,5 +99,16 @@
 			</form>
 		</div>
 	</section>
+
+	<script>
+		// Update file name after choosing a file.
+		const fileInput = document.querySelector('#picture input[type=file]');
+		fileInput.onchange = () => {
+			if (fileInput.files.length > 0) {
+				const fileName = document.querySelector('#picture .file-name');
+				fileName.textContent = fileInput.files[0].name;
+			}
+		}
+	</script>
 </body>
 </html>

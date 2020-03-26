@@ -18,7 +18,7 @@ CREATE TABLE `messages` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `full_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `picture_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `picture_filename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

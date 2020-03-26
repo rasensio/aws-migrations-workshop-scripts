@@ -30,6 +30,10 @@ $container->set('repo', function () {
     return new \App\DbRepository($dbHost, $dbUser, $dbPass, $dbName);
 });
 
+$container->set('imageManager', function () {
+    return new \App\ImageManager();
+});
+
 $container->set('view', function () {
     return Twig::create(__DIR__ . '/../views', ['cache' => false]);
 });
@@ -102,7 +106,13 @@ $app->get('/api/messages', function (Request $request, Response $response, array
 
 $app->post('/api/messages', function (Request $request, Response $response, array $args): Response {
     $body = $request->getParsedBody();
-    $this->get('repo')->insertMessage($body->full_name, $body->message);
+
+    $pictureFilename = null;
+    if ($body->picture !== null) {
+        $pictureFilename = $this->get('imageManager')->storeB64($body->picture);
+    }
+
+    $this->get('repo')->insertMessage($body->full_name, $body->message, $pictureFilename);
     $response->getBody()->write(json_encode(['status' => 'ok'], JSON_PRETTY_PRINT));
     return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
 });
@@ -116,7 +126,14 @@ $app->get('/', function (Request $request, Response $response, array $args): Res
 
 $app->post('/messages', function (Request $request, Response $response, array $args): Response {
     $body = $request->getParsedBody();
-    $this->get('repo')->insertMessage($body['full_name'], $body['message']);
+    $files = $request->getUploadedFiles();
+
+    $pictureFilename = null;
+    if (array_key_exists('picture', $files) && $files['picture']->getSize()) {
+        $pictureFilename = $this->get('imageManager')->storeUploadedFile($files['picture']);
+    }
+
+    $this->get('repo')->insertMessage($body['full_name'], $body['message'], $pictureFilename);
     return $response->withHeader('Location', '/')->withStatus(302);
 });
 /*
