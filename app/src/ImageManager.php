@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App;
 
 use Psr\Http\Message\UploadedFileInterface;
+use Ramsey\Uuid\Uuid;
 
 class ImageManager
 {
@@ -11,7 +12,7 @@ class ImageManager
 
 	public function storeB64(string $b64)
 	{
-		$filename = uniqid() . '.jpg';
+		$filename = Uuid::uuid4()->toString() . '.jpg';
 		if (file_put_contents(self::FOLDER . $filename, base64_decode($b64)) === false) {
 			throw new \RuntimeException('Failed to store image');
 		}
@@ -20,7 +21,7 @@ class ImageManager
 
 	public function storeUploadedFile(UploadedFileInterface $file)
 	{
-		$filename = uniqid() . '.jpg';
+		$filename = Uuid::uuid4()->toString() . '.jpg';
 		$file->moveTo(self::FOLDER . $filename);
 		return $filename;
 	}
